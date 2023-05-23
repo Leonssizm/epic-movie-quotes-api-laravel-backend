@@ -14,4 +14,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/users/create', [AuthController::class, 'register'])->name('auth.register');
+Route::post('users/create', [AuthController::class, 'register'])->name('auth.register');
