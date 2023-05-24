@@ -14,4 +14,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/users/create', [AuthController::class, 'register'])->name('auth.register');
+Route::post('users/create', [AuthController::class, 'register'])->name('auth.register');
+Route::post('users/email-verification-date', [AuthController::class, 'setVerificationDate'])->name('auth.verificationDate');
