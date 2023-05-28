@@ -80,4 +80,19 @@ class AuthController extends Controller
 			return response()->json(401);
 		}
 	}
+
+// For testing
+	public function test()
+	{
+		return 'IF YOU ARE SEEING THIS AUTH IS CORRECT';
+	}
+
+	public function logout(Request $request)
+	{
+		return $request;
+		// auth()->user()->tokens()->delete();
+		// return response()->json([
+		// 	'message' => 'Logged out',
+		// ], 200);
+	}
 }
