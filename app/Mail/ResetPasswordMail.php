@@ -8,7 +8,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class VerifyUserEmail extends Mailable
+class ResetPasswordMail extends Mailable
 {
 	use Queueable, SerializesModels;
 
@@ -32,7 +32,7 @@ class VerifyUserEmail extends Mailable
 	public function envelope(): Envelope
 	{
 		return new Envelope(
-			subject: 'Please verify your email address',
+			subject: 'Reset Password Email',
 		);
 	}
 
@@ -42,7 +42,7 @@ class VerifyUserEmail extends Mailable
 	public function content(): Content
 	{
 		return new Content(
-			view: 'components.emails.verification-email',
+			view: 'components.emails.reset-password',
 		);
 	}
 
