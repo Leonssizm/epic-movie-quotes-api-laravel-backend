@@ -90,7 +90,8 @@ class AuthController extends Controller
 // -->
 	public function logout(Request $request)
 	{
-		$request->user()->currentAccessToken()->delete();
+		$request->user()->tokens->last()->delete();
+		Auth::guard('web')->logout();
 		return response()->json([
 			'message' => 'Logged out',
 		], 200);
