@@ -37,7 +37,7 @@ class AuthController extends Controller
 		Mail::to($user->email)->send(new VerifyUserEmail($verificationUrl, $user));
 	}
 
-	public function setEmailVerificationDate(Request $request): JsonResponse
+	public function verifyEmail(Request $request): JsonResponse
 	{
 		$user = User::all()->where('email_verification_token', $request->token)->first();
 
@@ -70,29 +70,27 @@ class AuthController extends Controller
 	{
 		$user = User::where('email', $request->email)->first();
 
-		if (Auth::attempt($request->validated())) {
-			$token = $user->createToken('auth_token')->plainTextToken;
+		if (Auth::attempt($request->validated(), $request->filled('rememberMe'))) {
 			return response()->json([
-				'user' => $user,
-				'token'=> $token,
+				'user'    => $user,
 			], 201);
 		} else {
 			return response()->json(401);
 		}
 	}
 
-// For testing
+// For testing -->
 	public function test()
 	{
 		return 'IF YOU ARE SEEING THIS AUTH IS CORRECT';
 	}
 
+// -->
 	public function logout(Request $request)
 	{
-		return $request;
-		// auth()->user()->tokens()->delete();
-		// return response()->json([
-		// 	'message' => 'Logged out',
-		// ], 200);
+		Auth::guard('web')->logout();
+		return response()->json([
+			'message' => 'Logged out',
+		], 200);
 	}
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ForgotPasswordController;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,9 +20,14 @@ use Illuminate\Support\Facades\Route;
 // });
 
 Route::post('users/create', [AuthController::class, 'register'])->name('auth.register');
-Route::post('users/email-verification', [AuthController::class, 'setEmailVerificationDate'])->name('auth.verificationDate');
+Route::post('users/email-verification', [AuthController::class, 'verifyEmail'])->name('auth.verificationDate');
 Route::post('users/resend-verification-email', [AuthController::class, 'resendVerificationEmail'])->name('auth.resendEmail');
 Route::post('users/login', [AuthController::class, 'login'])->name('auth.login');
+
+// forgot password
+
+Route::post('reset-password/email', [ForgotPasswordController::class, 'sendVerificationEmail'])->name('reset.email');
+Route::post('reset-password/change', [ForgotPasswordController::class, 'changePassword'])->name('reset.newPassword');
 
 Route::middleware(['auth:sanctum'])->group(function () {
 	// For testing purposes
