@@ -71,10 +71,8 @@ class AuthController extends Controller
 		$user = User::where('email', $request->email)->first();
 
 		if (Auth::attempt($request->validated(), $request->filled('rememberMe'))) {
-			$token = $user->createToken('auth_token')->plainTextToken;
 			return response()->json([
 				'user'    => $user,
-				'token'   => $token,
 			], 201);
 		} else {
 			return response()->json(401);
@@ -90,7 +88,6 @@ class AuthController extends Controller
 // -->
 	public function logout(Request $request)
 	{
-		$request->user()->tokens->last()->delete();
 		Auth::guard('web')->logout();
 		return response()->json([
 			'message' => 'Logged out',
