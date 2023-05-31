@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\GoogleAuthController;
+use App\Http\Middleware\Cors;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -34,3 +36,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 	Route::get('newsfeed', [AuthController::class, 'test'])->name('test');
 	Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 });
+
+// Google registration
+
+Route::get('google/auth', [GoogleAuthController::class, 'redirect'])->name('google.auth')->middleware(Cors::class);
