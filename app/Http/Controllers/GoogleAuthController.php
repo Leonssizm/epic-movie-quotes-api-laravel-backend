@@ -16,7 +16,6 @@ class GoogleAuthController extends Controller
 
 	public function callbackGoogle()
 	{
-		return Socialite::driver('google')->user();
 		try {
 			$google_user = Socialite::driver('google')->user();
 
@@ -28,7 +27,7 @@ class GoogleAuthController extends Controller
 					'email'    => $google_user->getEmail(),
 					'google_id'=> $google_user->getId(),
 				]);
-				return response()->json('user is created', 200);
+				return redirect('localhost:5173');
 			} else {
 				return response()->json(['User already exists', $user], 200);
 			}
