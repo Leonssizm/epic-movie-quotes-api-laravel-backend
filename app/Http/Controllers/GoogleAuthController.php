@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Str;
 
 class GoogleAuthController extends Controller
 {
@@ -14,22 +16,26 @@ class GoogleAuthController extends Controller
 		return response()->json(['redirectUrl' => $redirectUrl], 200);
 	}
 
-	public function callbackGoogle()
+	public function callbackGoogle(): RedirectResponse | JsonResponse
 	{
 		try {
-			$google_user = Socialite::driver('google')->user();
+			$google_user = Socialite::driver('google')->stateless()->user();
 
 			$user = User::where('google_id', $google_user->getId())->first();
 
 			if (!$user) {
 				$new_user = User::create([
-					'name'     => $google_user->getName(),
-					'email'    => $google_user->getEmail(),
-					'google_id'=> $google_user->getId(),
+					'username'                => $google_user->getName(),
+					'email'                   => $google_user->getEmail(),
+					'google_id'               => $google_user->getId(),
+					'password'                => Str::random(10),
+					'email_verification_token'=> Str::random(60),
+					'email_verified_at'       => now(),
 				]);
-				return redirect('localhost:5173');
+
+				return redirect()->away('http://localhost:5173/auth/google/call-back/' . $new_user->google_id);
 			} else {
-				return response()->json(['User already exists', $user], 200);
+				return response()->json('User already exists', 401);
 			}
 		} catch(\Throwable $th) {
 			return response()->json(['Something went wrong', $th], 404);
