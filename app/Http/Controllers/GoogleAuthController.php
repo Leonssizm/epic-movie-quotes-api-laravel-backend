@@ -23,19 +23,27 @@ class GoogleAuthController extends Controller
 
 			$user = User::where('google_id', $google_user->getId())->first();
 
-			if (!$user) {
-				$new_user = User::create([
+			$new_user = User::firstOrCreate(
+				['google_id' => $google_user->getId()],
+				[
 					'username'                => $google_user->getName(),
 					'email'                   => $google_user->getEmail(),
-					'google_id'               => $google_user->getId(),
 					'password'                => Str::random(10),
 					'email_verification_token'=> Str::random(60),
 					'email_verified_at'       => now(),
-				]);
+				]
+			);
+
+			if ($new_user->wasRecentlyCreated && !$user) {
+				auth()->login($new_user);
 
 				return redirect()->away('http://localhost:5173/auth/google/call-back/' . $new_user->google_id);
-			} else {
-				return response()->json('User already exists', 401);
+			}
+
+			if (!$new_user->wasRecentlyCreated && $user) {
+				auth()->login($user);
+
+				return redirect()->away('http://localhost:5173/home');
 			}
 		} catch(\Throwable $th) {
 			return response()->json(['Something went wrong', $th], 404);
