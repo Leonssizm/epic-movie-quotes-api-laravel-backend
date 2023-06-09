@@ -31,19 +31,20 @@ class GoogleAuthController extends Controller
 					'password'                => Str::random(10),
 					'email_verification_token'=> Str::random(60),
 					'email_verified_at'       => now(),
+					'profile_picture'         => $google_user->getAvatar(),
 				]
 			);
 
 			if ($new_user->wasRecentlyCreated && !$user) {
 				auth()->login($new_user);
 
-				return redirect()->away('http://localhost:5173/auth/google/call-back/' . $new_user->google_id);
+				return redirect()->away(env('FRONTEND_CALLBACK_PAGE') . '/' . $new_user->google_id);
 			}
 
 			if (!$new_user->wasRecentlyCreated && $user) {
 				auth()->login($user);
 
-				return redirect()->away('http://localhost:5173/home');
+				return redirect()->away(env('FRONTEND_HOME_PAGE'));
 			}
 		} catch(\Throwable $th) {
 			return response()->json(['Something went wrong', $th], 404);

@@ -32,7 +32,7 @@ class AuthController extends Controller
 		$user->email_verification_token_created_at = now();
 		$user->save();
 
-		$verificationUrl = url("http://localhost:5173/verify?token={$token}");
+		$verificationUrl = url(env('USER_VERIFICATION_EMAIL_TOKEN_LINK') . $token);
 
 		Mail::to($user->email)->send(new VerifyUserEmail($verificationUrl, $user));
 	}
@@ -41,7 +41,7 @@ class AuthController extends Controller
 	{
 		$user = User::all()->where('email_verification_token', $request->token)->first();
 
-		if (Carbon::now()->diffInMinutes($user->email_verification_token_created_at) >= 20 && empty($user->email_verified_at)) {
+		if (Carbon::now()->diffInMinutes($user->email_verification_token_created_at) >= 10 && empty($user->email_verified_at)) {
 			return response()->json([
 				'message' => 'Token expired',
 				'expired' => true,
@@ -70,7 +70,7 @@ class AuthController extends Controller
 	{
 		$user = User::where('email', $request->email)->first();
 
-		if (Auth::attempt($request->validated(), $request->filled('rememberMe'))) {
+		if (Auth::attempt($request->validated(), $request->filled('rememberMe')) && $user->email_verified_at !== null) {
 			return response()->json([
 				'user'    => $user,
 			], 201);
@@ -79,13 +79,11 @@ class AuthController extends Controller
 		}
 	}
 
-// For testing -->
-	public function test()
+	public function checkIfUserIsAuthenticated(): JsonResponse
 	{
-		return 'IF YOU ARE SEEING THIS AUTH IS CORRECT';
+		return response()->json('user is authenticated', 200);
 	}
 
-// -->
 	public function logout(Request $request)
 	{
 		Auth::guard('web')->logout();
