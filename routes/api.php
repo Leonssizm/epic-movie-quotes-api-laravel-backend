@@ -3,7 +3,10 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\GoogleAuthController;
-use GuzzleHttp\Psr7\Request;
+use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\MovieController;
+use App\Http\Controllers\QuoteController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,14 +19,17 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-// 	return $request;
-// });
 
-Route::post('users/create', [AuthController::class, 'register'])->name('auth.register');
-Route::post('users/email-verification', [AuthController::class, 'verifyEmail'])->name('auth.verificationDate');
-Route::post('users/resend-verification-email', [AuthController::class, 'resendVerificationEmail'])->name('auth.resendEmail');
-Route::post('users/login', [AuthController::class, 'login'])->name('auth.login');
+Route::get('/change.locale/{locale}', [LanguageController::class, 'changeLocale'])->name('locale.change');
+
+Route::controller(AuthController::class)->group(function () {
+	Route::prefix('users')->group(function () {
+		Route::post('/register', 'register')->name('auth.register');
+		Route::post('/email-verification', 'verifyEmail')->name('auth.verificationDate');
+		Route::post('/resend-verification-email', 'resendVerificationEmail')->name('auth.resendEmail');
+		Route::post('/login', 'login')->name('auth.login');
+	});
+});
 
 // forgot password
 
@@ -31,9 +37,10 @@ Route::post('reset-password/email', [ForgotPasswordController::class, 'sendVerif
 Route::post('reset-password/change', [ForgotPasswordController::class, 'changePassword'])->name('reset.newPassword');
 
 Route::middleware(['auth:sanctum'])->group(function () {
-	// For testing purposes
-	Route::get('newsfeed', [AuthController::class, 'test'])->name('test');
 	Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+	Route::get('users/user', [UserController::class, 'getAuthenticatedUser'])->name('auth.user');
+	Route::get('movies', [MovieController::class, 'index'])->name('movies.all');
+	Route::get('quotes', [QuoteController::class, 'index'])->name('quotes.all');
 });
 
 Route::get('google/auth', [GoogleAuthController::class, 'redirect'])->name('google.redirect');
