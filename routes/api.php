@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\UserController;
@@ -19,9 +20,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/change.locale/{locale}', [LanguageController::class, 'changeLocale'])->name('locale.change');
+
 Route::controller(AuthController::class)->group(function () {
 	Route::prefix('users')->group(function () {
-		Route::post('/create', 'register')->name('auth.register');
+		Route::post('/register', 'register')->name('auth.register');
 		Route::post('/email-verification', 'verifyEmail')->name('auth.verificationDate');
 		Route::post('/resend-verification-email', 'resendVerificationEmail')->name('auth.resendEmail');
 		Route::post('/login', 'login')->name('auth.login');
@@ -34,7 +37,6 @@ Route::post('reset-password/email', [ForgotPasswordController::class, 'sendVerif
 Route::post('reset-password/change', [ForgotPasswordController::class, 'changePassword'])->name('reset.newPassword');
 
 Route::middleware(['auth:sanctum'])->group(function () {
-	Route::get('auth-check', [AuthController::class, 'checkIfUserIsAuthenticated'])->name('auth.check');
 	Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 	Route::get('users/user', [UserController::class, 'getAuthenticatedUser'])->name('auth.user');
 	Route::get('movies', [MovieController::class, 'index'])->name('movies.all');

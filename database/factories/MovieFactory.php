@@ -18,10 +18,19 @@ class MovieFactory extends Factory
 	public function definition(): array
 	{
 		return [
-			'title'       => $this->faker->sentence(),
+			'title'   => [
+				'en' => $this->faker->sentence(),
+				'ka' => fake('ka_GE')->realText(10),
+			],
 			'release_year'=> $this->faker->dateTimeBetween('-4 year', 'now'),
-			'director'    => $this->faker->name(),
-			'description' => $this->faker->text(),
+			'director'    => [
+				'en'=> $this->faker->name(),
+				'ka'=> fake('ka_GE')->name(),
+			],
+			'description' => [
+				'en' => $this->faker->sentence(),
+				'ka' => fake('ka_GE')->realText(10),
+			],
 			'user_id'     => User::factory(),
 		];
 	}

@@ -79,11 +79,6 @@ class AuthController extends Controller
 		}
 	}
 
-	public function checkIfUserIsAuthenticated(): JsonResponse
-	{
-		return response()->json('user is authenticated', 200);
-	}
-
 	public function logout(Request $request)
 	{
 		Auth::guard('web')->logout();
