@@ -1,10 +1,13 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\LikeController;
 use App\Http\Controllers\MovieController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -20,7 +23,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/change.locale/{locale}', [LanguageController::class, 'changeLocale'])->name('locale.change');
+Route::get('/change-locale/{locale}', [LanguageController::class, 'changeLocale'])->name('locale.change');
 
 Route::controller(AuthController::class)->group(function () {
 	Route::prefix('users')->group(function () {
@@ -39,8 +42,12 @@ Route::post('reset-password/change', [ForgotPasswordController::class, 'changePa
 Route::middleware(['auth:sanctum'])->group(function () {
 	Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 	Route::get('users/user', [UserController::class, 'getAuthenticatedUser'])->name('auth.user');
+	Route::post('edit/user/{user}', [UserController::class, 'editUserInfo'])->name('user.edit');
 	Route::get('movies', [MovieController::class, 'index'])->name('movies.all');
 	Route::get('quotes', [QuoteController::class, 'index'])->name('quotes.all');
+	Route::post('like-quote', [LikeController::class, 'like'])->name('quote.like');
+	Route::post('write-comment', [CommentController::class, 'addComment'])->name('comment.add');
+	Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.all');
 });
 
 Route::get('google/auth', [GoogleAuthController::class, 'redirect'])->name('google.redirect');
