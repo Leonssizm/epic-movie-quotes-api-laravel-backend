@@ -12,7 +12,7 @@ use Illuminate\Http\JsonResponse;
 
 class CommentController extends Controller
 {
-	public function index()
+	public function index(): JsonResponse
 	{
 		return response()->json(Comment::with('user')->get(), 200);
 	}
@@ -25,11 +25,9 @@ class CommentController extends Controller
 			'user_id' => $validateCommentRequest['user_id'],
 			'quote_id'=> $validateCommentRequest['quote_id'],
 			'body'    => $validateCommentRequest['body'],
-		]);
+		])->load('user');
 
-		$newComment->load('user');
-
-		$author = User::where('id', Quote::where('id', $newComment->quote_id)->first()->user_id)->first();
+		$author = User::firstWhere('id', Quote::where('id', $newComment->quote_id)->first()->user_id);
 
 		$notification = Notification::create([
 			'receiver_id'        => $author->id,
@@ -38,7 +36,10 @@ class CommentController extends Controller
 			'is_comment'         => true,
 		]);
 
-		NotificationSent::dispatch(['user' => User::where('id', $notification->receiver_id)->first(), 'quote' => Quote::where('id', $notification['quote_id'])->first(), 'sender'=>User::where('id', auth()->user()->id)->first(), 'notification' => $notification]);
+		$quote = Quote::firstWhere('id', $notification['quote_id']);
+		$sender = User::firstWhere('id', auth()->user()->id);
+
+		NotificationSent::dispatch(['user' => $author, 'quote' => $quote, 'sender'=>$sender, 'notification' => $notification]);
 
 		return response()->json($newComment, 200);
 	}

@@ -11,24 +11,23 @@ use App\Models\User;
 
 class LikeController extends Controller
 {
-	public function like(LikeRequest $request, Like $like)
+	public function like(LikeRequest $request)
 	{
 		$validated = $request->validated();
 
-		$alreadyLiked = $like->where('user_id', $validated['user_id'])->where('quote_id', $validated['quote_id'])->first();
+		$alreadyLiked = Like::firstWhere('user_id', $validated['user_id']);
 
 		if ($alreadyLiked) {
 			$alreadyLiked->delete();
-
 			return response()->json('unlike', 200);
 		}
 
-		$like->create([
+		Like::create([
 			'quote_id' => $validated['quote_id'],
 			'user_id'  => $validated['user_id'],
 		]);
 
-		$author = Quote::where('id', $validated['quote_id'])->first()->user;
+		$author = Quote::firstWhere('id', $validated['quote_id'])->user;
 
 		$notification = Notification::create([
 			'receiver_id'     => $author->id,
@@ -36,8 +35,10 @@ class LikeController extends Controller
 			'sender_id'       => auth()->user()->id,
 			'is_like'         => true,
 		]);
+		$quote = Quote::firstWhere('id', $validated['quote_id']);
+		$sender = User::firstWhere('id', auth()->user()->id);
 
-		NotificationSent::dispatch(['user' => User::where('id', $author->id)->first(), 'quote' => Quote::where('id', $validated['quote_id'])->first(), 'sender'=>User::where('id', auth()->user()->id)->first(), 'notification' => $notification]);
+		NotificationSent::dispatch(['user' => $author, 'quote' => $quote, 'sender'=>$sender, 'notification' => $notification]);
 
 		return response()->json('liked', 200);
 	}

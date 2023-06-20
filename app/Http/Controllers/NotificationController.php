@@ -11,14 +11,14 @@ class NotificationController extends Controller
 {
 	public function index(): JsonResponse
 	{
-		$notification = Notification::where('receiver_id', auth()->user()->id)->first();
+		$notification = Notification::firstWhere('receiver_id', auth()->user()->id);
 
 		if ($notification !== null) {
-			$quote = Quote::where('id', $notification->quote_id)->first();
+			$quote = Quote::find($notification->quote_id);
 
-			$receiver = User::where('id', $quote->user_id)->first();
+			$receiver = User::find($quote->user_id);
 
-			$sender = User::where('id', $notification->sender_id)->first();
+			$sender = User::find($notification->sender_id);
 
 			$response = ['quote' => $quote, 'user'=>$receiver, 'sender' => $sender, 'notification'=>$notification];
 
