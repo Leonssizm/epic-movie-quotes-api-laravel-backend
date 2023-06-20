@@ -27,7 +27,7 @@ class CommentController extends Controller
 			'body'    => $validateCommentRequest['body'],
 		])->load('user');
 
-		$author = User::firstWhere('id', Quote::where('id', $newComment->quote_id)->first()->user_id);
+		$author = User::find(Quote::where('id', $newComment->quote_id)->first()->user_id);
 
 		$notification = Notification::create([
 			'receiver_id'        => $author->id,
@@ -36,8 +36,8 @@ class CommentController extends Controller
 			'is_comment'         => true,
 		]);
 
-		$quote = Quote::firstWhere('id', $notification['quote_id']);
-		$sender = User::firstWhere('id', auth()->user()->id);
+		$quote = Quote::find($notification['quote_id']);
+		$sender = User::find(auth()->user()->id);
 
 		NotificationSent::dispatch(['user' => $author, 'quote' => $quote, 'sender'=>$sender, 'notification' => $notification]);
 
