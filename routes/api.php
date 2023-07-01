@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\GenreController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\LikeController;
@@ -41,13 +42,34 @@ Route::post('reset-password/change', [ForgotPasswordController::class, 'changePa
 
 Route::middleware(['auth:sanctum'])->group(function () {
 	Route::post('logout', [AuthController::class, 'logout'])->name('logout');
-	Route::get('users/user', [UserController::class, 'getAuthenticatedUser'])->name('auth.user');
-	Route::post('edit/user/{user}', [UserController::class, 'editUserInfo'])->name('user.edit');
-	Route::get('movies', [MovieController::class, 'index'])->name('movies.all');
-	Route::get('quotes', [QuoteController::class, 'index'])->name('quotes.all');
+	Route::controller(UserController::class)->group(function () {
+		Route::get('users/user', 'getAuthenticatedUser')->name('auth.user');
+		Route::post('edit/user/{user}', 'editUserInfo')->name('user.edit');
+		Route::post('change-email', 'changeUserEmail')->name('user.changeEmail');
+	});
+	Route::controller(MovieController::class)->group(function () {
+		Route::get('movies', 'index')->name('movies');
+		Route::post('create-movie', 'createMovie')->name('movie.create');
+		Route::get('user/{user}/movies', 'getAllUserMovies')->name('userMovies.all');
+		Route::get('movies/{movie}', 'getSingleMovie')->name('movie.get');
+		Route::post('movies/edit/{movie}', 'editMovie')->name('movie.edit');
+		Route::delete('movies/delete/{movie}', 'deleteMovie')->name('movie.delete');
+	});
+	Route::controller(QuoteController::class)->group(function () {
+		Route::get('quotes', 'index')->name('quotes.all');
+		Route::post('create-quote', 'createQuote')->name('quote.create');
+		Route::get('quotes/{quote}', 'getSingleQuote')->name('quote.get');
+		Route::post('quotes/edit/{quote}', 'editQuote')->name('quote.edit');
+		Route::delete('quotes/delete/{quote}', 'deleteQuote')->name('quote.delete');
+	});
+
 	Route::post('like-quote', [LikeController::class, 'like'])->name('quote.like');
 	Route::post('write-comment', [CommentController::class, 'addComment'])->name('comment.add');
+
 	Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.all');
+	Route::get('notifications/{notification}', [NotificationController::class, 'makeNotificationRead'])->name('notifications.read');
+
+	Route::get('genres', [GenreController::class, 'index'])->name('genre.all');
 });
 
 Route::get('google/auth', [GoogleAuthController::class, 'redirect'])->name('google.redirect');

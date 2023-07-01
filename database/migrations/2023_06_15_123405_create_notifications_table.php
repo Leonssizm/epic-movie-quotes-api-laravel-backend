@@ -17,6 +17,7 @@ return new class extends Migration {
 			$table->foreignId('sender_id')->references('id')->on('users')->constrained()->cascadeOnDelete();
 			$table->boolean('is_like')->default(false);
 			$table->boolean('is_comment')->default(false);
+			$table->boolean('is_new')->default(true);
 			$table->timestamps();
 		});
 	}
