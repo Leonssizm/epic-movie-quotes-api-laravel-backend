@@ -22,27 +22,25 @@ class QuoteController extends Controller
 		return response()->json(new QuoteCollection($quotes), 200);
 	}
 
-	public function getSingleQuote(Quote $quote): JsonResponse
+	public function showSingleQuote(Quote $quote): JsonResponse
 	{
 		$quote = new QuoteResource($quote);
 		return response()->json($quote, 200);
 	}
 
-	public function createQuote(StoreQuoteRequest $request)
+	public function storeQuote(StoreQuoteRequest $request)
 	{
 		$validatedRequest = $request->validated();
 
-		$quote = Quote::create([
-			'body'            => $validatedRequest['body'],
-			'user_id'         => $validatedRequest['user_id'],
-			'thumbnail'       => $this->storeImage($validatedRequest),
-			'movie_id'        => $validatedRequest['movie_id'],
-		]);
+		$imagePath = $this->storeImage($validatedRequest);
+		$validatedRequest['thumbnail'] = $imagePath;
+
+		$quote = Quote::create($validatedRequest);
 
 		return response()->json($quote, 200);
 	}
 
-	public function editQuote(UpdateQuoteRequest $request, Quote $quote)
+	public function updateQuote(UpdateQuoteRequest $request, Quote $quote)
 	{
 		$quote->update($request->validated());
 
@@ -61,7 +59,7 @@ class QuoteController extends Controller
 		return response()->json('success', 200);
 	}
 
-	public function deleteQuote(Quote $quote): JsonResponse
+	public function destroyQuote(Quote $quote): JsonResponse
 	{
 		File::delete('storage/' . $quote->thumbnail);
 

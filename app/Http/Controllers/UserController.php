@@ -67,15 +67,11 @@ class UserController extends Controller
 
 	public function changeUserEmail(Request $request): JsonResponse
 	{
-		$user = User::firstWhere('email_verification_token', $request->token);
+		$user = User::findOrFail('email_verification_token', $request->token);
 
-		if ($user) {
-			$user->email = $request->email;
-			$user->save();
-			return response()->json('email is changed', 200);
-		} else {
-			return response()->json('something went wrong', 404);
-		}
+		$user->email = $request->email;
+		$user->save();
+		return response()->json('email is changed', 200);
 	}
 
 	private function storeImage($request)

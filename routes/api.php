@@ -29,8 +29,8 @@ Route::get('/change-locale/{locale}', [LanguageController::class, 'changeLocale'
 Route::controller(AuthController::class)->group(function () {
 	Route::prefix('users')->group(function () {
 		Route::post('/register', 'register')->name('auth.register');
-		Route::post('/email-verification', 'verifyEmail')->name('auth.verificationDate');
-		Route::post('/resend-verification-email', 'resendVerificationEmail')->name('auth.resendEmail');
+		Route::post('/email-verification', 'verifyEmail')->name('auth.verification_date');
+		Route::post('/resend-verification-email', 'resendVerificationEmail')->name('auth.resend_email');
 		Route::post('/login', 'login')->name('auth.login');
 	});
 });
@@ -38,29 +38,29 @@ Route::controller(AuthController::class)->group(function () {
 // forgot password
 
 Route::post('reset-password/email', [ForgotPasswordController::class, 'sendVerificationEmail'])->name('reset.email');
-Route::post('reset-password/change', [ForgotPasswordController::class, 'changePassword'])->name('reset.newPassword');
+Route::post('reset-password/change', [ForgotPasswordController::class, 'changePassword'])->name('reset.new_password');
 
 Route::middleware(['auth:sanctum'])->group(function () {
 	Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 	Route::controller(UserController::class)->group(function () {
 		Route::get('users/user', 'getAuthenticatedUser')->name('auth.user');
 		Route::post('edit/user/{user}', 'editUserInfo')->name('user.edit');
-		Route::post('change-email', 'changeUserEmail')->name('user.changeEmail');
+		Route::post('change-email', 'changeUserEmail')->name('user.change_email');
 	});
 	Route::controller(MovieController::class)->group(function () {
 		Route::get('movies', 'index')->name('movies');
-		Route::post('create-movie', 'createMovie')->name('movie.create');
-		Route::get('user/{user}/movies', 'getAllUserMovies')->name('userMovies.all');
-		Route::get('movies/{movie}', 'getSingleMovie')->name('movie.get');
-		Route::post('movies/edit/{movie}', 'editMovie')->name('movie.edit');
-		Route::delete('movies/delete/{movie}', 'deleteMovie')->name('movie.delete');
+		Route::post('movie', 'storeMovie')->name('movie.create');
+		Route::get('user/{user}/movies', 'getAllUserMovies')->name('user_movies.all');
+		Route::get('movies/{movie}', 'showSingleMovie')->name('movie.get');
+		Route::post('movies/{movie}', 'updateMovie')->name('movie.edit');
+		Route::delete('movies/{movie}', 'destroyMovie')->name('movie.delete');
 	});
 	Route::controller(QuoteController::class)->group(function () {
 		Route::get('quotes', 'index')->name('quotes.all');
-		Route::post('create-quote', 'createQuote')->name('quote.create');
-		Route::get('quotes/{quote}', 'getSingleQuote')->name('quote.get');
-		Route::post('quotes/edit/{quote}', 'editQuote')->name('quote.edit');
-		Route::delete('quotes/delete/{quote}', 'deleteQuote')->name('quote.delete');
+		Route::post('quote', 'storeQuote')->name('quote.create');
+		Route::get('quotes/{quote}', 'showSingleQuote')->name('quote.get');
+		Route::post('quotes/{quote}', 'updateQuote')->name('quote.edit');
+		Route::delete('quotes/{quote}', 'destroyQuote')->name('quote.delete');
 	});
 
 	Route::post('like-quote', [LikeController::class, 'like'])->name('quote.like');

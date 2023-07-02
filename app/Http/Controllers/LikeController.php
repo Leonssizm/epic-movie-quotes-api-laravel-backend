@@ -7,7 +7,6 @@ use App\Http\Requests\Like\LikeRequest;
 use App\Models\Like;
 use App\Models\Notification;
 use App\Models\Quote;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 
 class LikeController extends Controller
@@ -33,15 +32,15 @@ class LikeController extends Controller
 
 		$author = Quote::firstWhere('id', $validated['quote_id'])->user;
 
-		if ($author->id !== auth()->user()->id) {
+		if ($author->id !== auth()->id()) {
 			$notification = Notification::create([
 				'receiver_id'     => $author->id,
 				'quote_id'        => $validated['quote_id'],
-				'sender_id'       => auth()->user()->id,
+				'sender_id'       => auth()->id,
 				'is_like'         => true,
 			]);
 			$quote = Quote::firstWhere('id', $validated['quote_id']);
-			$sender = User::firstWhere('id', auth()->user()->id);
+			$sender = auth()->user();
 
 			NotificationSent::dispatch(['user' => $author, 'quote' => $quote, 'sender'=>$sender, 'notification' => $notification]);
 		}

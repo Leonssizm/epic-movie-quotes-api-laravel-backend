@@ -29,18 +29,18 @@ class CommentController extends Controller
 
 		$author = User::find(Quote::where('id', $newComment->quote_id)->first()->user_id);
 
-		if ($author->id !== auth()->user()->id) {
+		if ($author->id !== auth()->id()) {
 			{
 				$notification = Notification::create([
 					'receiver_id'        => $author->id,
 					'quote_id'           => $newComment['quote_id'],
-					'sender_id'          => auth()->user()->id,
+					'sender_id'          => auth()->id,
 					'is_comment'         => true,
 				]);
 			}
 
 			$quote = Quote::find($notification['quote_id']);
-			$sender = User::find(auth()->user()->id);
+			$sender = auth()->user();
 
 			NotificationSent::dispatch(['user' => $author, 'quote' => $quote, 'sender'=>$sender, 'notification' => $notification]);
 		}

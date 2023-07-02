@@ -27,37 +27,30 @@ class MovieController extends Controller
 	{
 		$movies = $user->movies()->get();
 
-		if ($movies->isEmpty()) {
-			return response()->json('User has no movies', 404);
-		} else {
-			return response()->json($movies, 200);
-		}
+		return response()->json($movies, 200);
 	}
 
-	public function getSingleMovie(Movie $movie): JsonResponse
+	public function showSingleMovie(Movie $movie): JsonResponse
 	{
 		$movie = new MovieResource($movie);
 		return response()->json($movie, 200);
 	}
 
-	public function createMovie(StoreMovieRequest $request): JsonResponse
+	public function storeMovie(StoreMovieRequest $request): JsonResponse
 	{
 		$validatedRequest = $request->validated();
-		$movie = Movie::create([
-			'title'       => $validatedRequest['title'],
-			'release_year'=> $validatedRequest['release_year'],
-			'director'    => $validatedRequest['director'],
-			'description' => $validatedRequest['description'],
-			'user_id'     => $validatedRequest['user_id'],
-			'image'       => $this->storeImage($validatedRequest),
-		]);
+
+		$imagePath = $this->storeImage($validatedRequest);
+		$validatedRequest['image'] = $imagePath;
+
+		$movie = Movie::create($validatedRequest);
 
 		$movie->genres()->attach($validatedRequest['genre_ids']);
 
 		return response()->json($movie, 200);
 	}
 
-	public function editMovie(UpdateMovieRequest $request, Movie $movie)
+	public function updateMovie(UpdateMovieRequest $request, Movie $movie)
 	{
 		$movie->update($request->validated());
 
@@ -78,7 +71,7 @@ class MovieController extends Controller
 		return response()->json('success', 200);
 	}
 
-	public function deleteMovie(Movie $movie): JsonResponse
+	public function destroyMovie(Movie $movie): JsonResponse
 	{
 		File::delete('storage/' . $movie->thumbnail);
 

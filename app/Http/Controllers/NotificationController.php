@@ -3,29 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notification;
-use App\Models\Quote;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 class NotificationController extends Controller
 {
-	public function index(): JsonResponse
+	public function index()
 	{
-		$notifications = Notification::where('receiver_id', auth()->user()->id)->get();
+		$notifications = Notification::where('receiver_id', auth()->id())->get();
 
+		$notifications->load(['quote', 'sender']);
 		if ($notifications->count() > 0) {
 			$response = [];
 
 			foreach ($notifications as $notification) {
-				$quote = Quote::find($notification->quote_id);
-				$receiver = User::find($quote->user_id);
-				$sender = User::find($notification->sender_id);
+				$receiver = User::find($notification->quote->user_id);
 
 				$response[] = [
-					'quote'        => $quote,
+					'quote'        => $notification->quote,
 					'user'         => $receiver,
-					'sender'       => $sender,
+					'sender'       => $notification->sender,
 					'notification' => $notification,
 				];
 			}
@@ -36,7 +33,7 @@ class NotificationController extends Controller
 		}
 	}
 
-	public function makeNotificationRead(Request $request, Notification $notification): JsonResponse
+	public function makeNotificationRead(Notification $notification): JsonResponse
 	{
 		$notification->is_new = false;
 		$notification->save();
