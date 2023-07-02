@@ -30,13 +30,13 @@ class MovieController extends Controller
 		return response()->json($movies, 200);
 	}
 
-	public function showSingleMovie(Movie $movie): JsonResponse
+	public function show(Movie $movie): JsonResponse
 	{
 		$movie = new MovieResource($movie);
 		return response()->json($movie, 200);
 	}
 
-	public function storeMovie(StoreMovieRequest $request): JsonResponse
+	public function store(StoreMovieRequest $request): JsonResponse
 	{
 		$validatedRequest = $request->validated();
 
@@ -50,7 +50,7 @@ class MovieController extends Controller
 		return response()->json($movie, 200);
 	}
 
-	public function updateMovie(UpdateMovieRequest $request, Movie $movie)
+	public function update(UpdateMovieRequest $request, Movie $movie)
 	{
 		$movie->update($request->validated());
 
@@ -71,7 +71,7 @@ class MovieController extends Controller
 		return response()->json('success', 200);
 	}
 
-	public function destroyMovie(Movie $movie): JsonResponse
+	public function destroy(Movie $movie): JsonResponse
 	{
 		File::delete('storage/' . $movie->thumbnail);
 

@@ -51,20 +51,20 @@ Route::middleware(['auth:sanctum'])->group(function () {
 		Route::get('movies', 'index')->name('movies');
 		Route::post('movie', 'storeMovie')->name('movie.create');
 		Route::get('user/{user}/movies', 'getAllUserMovies')->name('user_movies.all');
-		Route::get('movies/{movie}', 'showSingleMovie')->name('movie.get');
-		Route::post('movies/{movie}', 'updateMovie')->name('movie.edit');
-		Route::delete('movies/{movie}', 'destroyMovie')->name('movie.delete');
+		Route::get('movies/{movie}', 'show')->name('movie.get');
+		Route::post('movies/{movie}', 'update')->name('movie.edit');
+		Route::delete('movies/{movie}', 'destroy')->name('movie.delete');
 	});
 	Route::controller(QuoteController::class)->group(function () {
 		Route::get('quotes', 'index')->name('quotes.all');
-		Route::post('quote', 'storeQuote')->name('quote.create');
-		Route::get('quotes/{quote}', 'showSingleQuote')->name('quote.get');
-		Route::post('quotes/{quote}', 'updateQuote')->name('quote.edit');
-		Route::delete('quotes/{quote}', 'destroyQuote')->name('quote.delete');
+		Route::post('quote', 'store')->name('quote.create');
+		Route::get('quotes/{quote}', 'show')->name('quote.get');
+		Route::post('quotes/{quote}', 'update')->name('quote.edit');
+		Route::delete('quotes/{quote}', 'destroy')->name('quote.delete');
 	});
 
-	Route::post('like-quote', [LikeController::class, 'like'])->name('quote.like');
-	Route::post('write-comment', [CommentController::class, 'addComment'])->name('comment.add');
+	Route::post('like', [LikeController::class, 'like'])->name('quote.like');
+	Route::post('comment', [CommentController::class, 'store'])->name('comment.add');
 
 	Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.all');
 	Route::get('notifications/{notification}', [NotificationController::class, 'makeNotificationRead'])->name('notifications.read');

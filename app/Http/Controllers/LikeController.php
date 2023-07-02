@@ -17,10 +17,16 @@ class LikeController extends Controller
 
 		$alreadyLiked = Like::firstWhere('quote_id', $validated['quote_id']);
 
+		$author = Quote::firstWhere('id', $validated['quote_id'])->user;
+
 		if ($alreadyLiked) {
-			$alreadyLiked->delete();
-			$notification = Notification::firstWhere('quote_id', $alreadyLiked->quote_id);
-			$notification->delete();
+			if ($author->id !== auth()->id()) {
+				$notification = Notification::firstWhere('quote_id', $alreadyLiked->quote_id);
+				$alreadyLiked->delete();
+				$notification->delete();
+			} else {
+				$alreadyLiked->delete();
+			}
 
 			return response()->json('unlike', 200);
 		}
@@ -29,8 +35,6 @@ class LikeController extends Controller
 			'quote_id' => $validated['quote_id'],
 			'user_id'  => $validated['user_id'],
 		]);
-
-		$author = Quote::firstWhere('id', $validated['quote_id'])->user;
 
 		if ($author->id !== auth()->id()) {
 			$notification = Notification::create([

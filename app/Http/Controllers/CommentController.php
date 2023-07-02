@@ -17,7 +17,7 @@ class CommentController extends Controller
 		return response()->json(Comment::with('user')->get(), 200);
 	}
 
-	public function addComment(StoreCommentRequest $request, Comment $comment): JsonResponse
+	public function store(StoreCommentRequest $request, Comment $comment): JsonResponse
 	{
 		$validateCommentRequest = $request->validated();
 
@@ -34,7 +34,7 @@ class CommentController extends Controller
 				$notification = Notification::create([
 					'receiver_id'        => $author->id,
 					'quote_id'           => $newComment['quote_id'],
-					'sender_id'          => auth()->id,
+					'sender_id'          => auth()->id(),
 					'is_comment'         => true,
 				]);
 			}

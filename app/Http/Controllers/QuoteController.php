@@ -22,13 +22,13 @@ class QuoteController extends Controller
 		return response()->json(new QuoteCollection($quotes), 200);
 	}
 
-	public function showSingleQuote(Quote $quote): JsonResponse
+	public function show(Quote $quote): JsonResponse
 	{
 		$quote = new QuoteResource($quote);
 		return response()->json($quote, 200);
 	}
 
-	public function storeQuote(StoreQuoteRequest $request)
+	public function store(StoreQuoteRequest $request)
 	{
 		$validatedRequest = $request->validated();
 
@@ -40,7 +40,7 @@ class QuoteController extends Controller
 		return response()->json($quote, 200);
 	}
 
-	public function updateQuote(UpdateQuoteRequest $request, Quote $quote)
+	public function update(UpdateQuoteRequest $request, Quote $quote)
 	{
 		$quote->update($request->validated());
 
@@ -59,7 +59,7 @@ class QuoteController extends Controller
 		return response()->json('success', 200);
 	}
 
-	public function destroyQuote(Quote $quote): JsonResponse
+	public function destroy(Quote $quote): JsonResponse
 	{
 		File::delete('storage/' . $quote->thumbnail);
 
