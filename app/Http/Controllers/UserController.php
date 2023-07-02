@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
+use App\Mail\ChangeEmailMail;
 use App\Models\User;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
 	public function getAuthenticatedUser(): JsonResponse
 	{
-		return response()->json(Auth::user(), 200);
+		return response()->json(new UserResource(Auth::user()), 200);
 	}
 
 	public function editUserInfo(Request $request, User $user): JsonResponse
@@ -42,10 +46,32 @@ class UserController extends Controller
 				]);
 			}
 
+			if ($request->has('new_email')) {
+				$token = Str::random(60);
+
+				$user->email_verification_token = $token;
+				$user->email_verification_token_created_at = now();
+
+				$user->save();
+
+				$verificationUrl = url(env('USER_VERIFICATION_NEW_EMAIL_TOKEN_LINK') . $token . '&email=' . $request->new_email);
+
+				Mail::to($request->new_email)->send(new ChangeEmailMail($verificationUrl, $request->new_email));
+			}
+
 			return response()->json(['message' => 'User information updated successfully'], 200);
 		} catch (\Exception $e) {
 			return response()->json(['error' => 'An error occurred while updating user information'], 500);
 		}
+	}
+
+	public function changeUserEmail(Request $request): JsonResponse
+	{
+		$user = User::findOrFail('email_verification_token', $request->token);
+
+		$user->email = $request->email;
+		$user->save();
+		return response()->json('email is changed', 200);
 	}
 
 	private function storeImage($request)
