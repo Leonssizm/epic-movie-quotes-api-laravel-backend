@@ -18,7 +18,13 @@ class MovieController extends Controller
 	{
 		$perPage = $request->input('per_page', 6);
 
-		$movies = Movie::orderByDesc('created_at')->paginate($perPage);
+		$search = $request->input('search');
+
+		if ($search) {
+			$movies = Movie::orderByDesc('created_at')->filter(['search' => $search])->paginate($perPage);
+		} else {
+			$movies = Movie::orderByDesc('created_at')->paginate($perPage);
+		}
 
 		return response()->json(new MovieCollection($movies), 200);
 	}
@@ -33,6 +39,7 @@ class MovieController extends Controller
 	public function show(Movie $movie): JsonResponse
 	{
 		$movie = new MovieResource($movie);
+
 		return response()->json($movie, 200);
 	}
 

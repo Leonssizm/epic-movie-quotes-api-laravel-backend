@@ -17,6 +17,18 @@ class Movie extends Model
 
 	protected $guarded = ['id'];
 
+	public function scopeFilter($query, array $filters)
+	{
+		if ($filters['search'] ?? false) {
+			$movieName = $filters['search'];
+
+			$query->where(function ($q) use ($movieName) {
+				$q->where('title->en', 'like', '%' . ucwords($movieName) . '%')
+					->orWhere('title->ka', 'like', '%' . $movieName . '%');
+			});
+		}
+	}
+
 	public function user(): BelongsTo
 	{
 		return $this->belongsTo(User::class);

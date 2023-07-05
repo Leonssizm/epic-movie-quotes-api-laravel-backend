@@ -35,8 +35,6 @@ Route::controller(AuthController::class)->group(function () {
 	});
 });
 
-// forgot password
-
 Route::post('reset-password/email', [ForgotPasswordController::class, 'sendVerificationEmail'])->name('reset.email');
 Route::post('reset-password/change', [ForgotPasswordController::class, 'changePassword'])->name('reset.new_password');
 
@@ -49,7 +47,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 	});
 	Route::controller(MovieController::class)->group(function () {
 		Route::get('movies', 'index')->name('movies');
-		Route::post('movie', 'storeMovie')->name('movie.create');
+		Route::post('movie', 'store')->name('movie.create');
 		Route::get('user/{user}/movies', 'getAllUserMovies')->name('user_movies.all');
 		Route::get('movies/{movie}', 'show')->name('movie.get');
 		Route::post('movies/{movie}', 'update')->name('movie.edit');
@@ -68,6 +66,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 	Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.all');
 	Route::get('notifications/{notification}', [NotificationController::class, 'makeNotificationRead'])->name('notifications.read');
+	Route::get('notifications/read/all', [NotificationController::class, 'readAllNotifications'])->name('notifications.read_all');
 
 	Route::get('genres', [GenreController::class, 'index'])->name('genre.all');
 });

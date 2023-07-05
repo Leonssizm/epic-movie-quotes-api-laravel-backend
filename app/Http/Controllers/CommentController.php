@@ -17,32 +17,25 @@ class CommentController extends Controller
 		return response()->json(Comment::with('user')->get(), 200);
 	}
 
-	public function store(StoreCommentRequest $request, Comment $comment): JsonResponse
+	public function store(StoreCommentRequest $request, Comment $comment)
 	{
-		$validateCommentRequest = $request->validated();
-
-		$newComment = $comment->create([
-			'user_id' => $validateCommentRequest['user_id'],
-			'quote_id'=> $validateCommentRequest['quote_id'],
-			'body'    => $validateCommentRequest['body'],
-		])->load('user');
+		$newComment = $comment->create($request->validated())->load('user');
 
 		$author = User::find(Quote::where('id', $newComment->quote_id)->first()->user_id);
 
 		if ($author->id !== auth()->id()) {
-			{
-				$notification = Notification::create([
-					'receiver_id'        => $author->id,
-					'quote_id'           => $newComment['quote_id'],
-					'sender_id'          => auth()->id(),
-					'is_comment'         => true,
-				]);
-			}
+			$notification = Notification::create([
+				'receiver_id'     => $author->id,
+				'notifiable_id'   => $newComment['quote_id'],
+				'notifiable_type' => Quote::class,
+				'sender_id'       => auth()->id(),
+				'is_comment'      => true,
+			]);
 
-			$quote = Quote::find($notification['quote_id']);
+			$quote = Quote::find($newComment['quote_id']);
 			$sender = auth()->user();
 
-			NotificationSent::dispatch(['user' => $author, 'quote' => $quote, 'sender'=>$sender, 'notification' => $notification]);
+			NotificationSent::dispatch(['user' => $author, 'quote' => $quote, 'sender' => $sender, 'notification' => $notification]);
 		}
 
 		return response()->json($newComment, 200);

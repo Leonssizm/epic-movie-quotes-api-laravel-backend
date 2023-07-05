@@ -17,7 +17,16 @@ class QuoteController extends Controller
 	{
 		$perPage = $request->input('per_page', 2);
 
-		$quotes = Quote::orderByDesc('created_at')->paginate($perPage);
+		$search = $request->input('search');
+
+		if ($search) {
+			$quotes = Quote::orderByDesc('created_at')
+			->filter(['search' => $search])
+			->paginate($perPage);
+		} else {
+			$quotes = Quote::orderByDesc('created_at')
+			->paginate($perPage);
+		}
 
 		return response()->json(new QuoteCollection($quotes), 200);
 	}

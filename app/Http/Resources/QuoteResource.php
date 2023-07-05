@@ -14,7 +14,7 @@ class QuoteResource extends JsonResource
 	 */
 	public function toArray(Request $request): array
 	{
-		$this->loadMissing(['user', 'comments.user', 'likes']);
+		$this->loadMissing(['user', 'comments.user', 'likedByUsers']);
 		return [
 			'id'                => $this->id,
 			'body'              => [
@@ -29,7 +29,7 @@ class QuoteResource extends JsonResource
 			'movie'             => new MovieResource($this->whenLoaded('movie')),
 			'user'              => new UserResource($this->whenLoaded('user')),
 			'comments'          => CommentResource::collection($this->whenLoaded('comments')),
-			'likes'             => LikeResource::collection($this->whenLoaded('likes')),
+			'likes'             => LikeResource::collection($this->whenLoaded('likedByUsers')),
 		];
 	}
 }

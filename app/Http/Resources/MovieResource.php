@@ -35,7 +35,11 @@ class MovieResource extends JsonResource
 			'image'             => $this->image,
 			'created_at'        => $this->created_at,
 			'updated_at'        => $this->updated_at,
-			'quotes'            => QuoteResource::collection($this->whenLoaded('quotes')),
+			'quotes'            => $this->whenLoaded('quotes', function () {
+				return QuoteResource::collection($this->quotes)->additional([
+					'likes' => $this->quotes->pluck('likedByUsers')->flatten(),
+				]);
+			}),
 			'genres'            => new GenreResource($this->whenLoaded('genres')),
 		];
 	}
