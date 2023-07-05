@@ -25,7 +25,9 @@ class QuoteCollection extends ResourceCollection
 				'movie'    => new MovieResource($quote->movie),
 				'user'     => new UserResource($quote->user),
 				'comments' => CommentResource::collection($quote->comments),
-				'likes'    => LikeResource::collection($quote->likes),
+				'likes'    => $quote->likedByUsers()->withTimestamps()->get()->map(function ($like) {
+					return new LikeResource($like);
+				}),
 			];
 		})->toArray();
 	}

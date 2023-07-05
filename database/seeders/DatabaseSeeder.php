@@ -5,7 +5,6 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Comment;
 use App\Models\Genre;
-use App\Models\Like;
 use App\Models\Movie;
 use App\Models\Quote;
 use App\Models\User;
@@ -26,10 +25,15 @@ class DatabaseSeeder extends Seeder
 			$movie = Movie::factory()->create(['user_id' => $user->id]);
 			$quote = Quote::factory()->create(['user_id' => $user->id, 'movie_id' => $movie->id]);
 			$comment = Comment::factory()->create(['user_id' => $user->id, 'quote_id' => $quote->id]);
-			$like = Like::factory()->create(['user_id' => $user->id, 'quote_id' => $quote->id]);
 			$genres = Genre::inRandomOrder()->limit(rand(1, 14))->get();
 
 			$movie->genres()->attach($genres);
+
+			$numLikes = rand(0, 10);
+			for ($i = 0; $i < $numLikes; $i++) {
+				$liker = User::inRandomOrder()->first();
+				$quote->likedByUsers()->attach($liker);
+			}
 		});
 	}
 }

@@ -66,20 +66,20 @@ class AuthController extends Controller
 		return response()->json([$user], 201);
 	}
 
-	public function login(LoginRequest $request)
+	public function login(LoginRequest $request): JsonResponse
 	{
 		$user = User::where('email', $request->email)->first();
 
-		if (Auth::attempt($request->validated(), $request->filled('rememberMe')) && $user->email_verified_at !== null) {
+		$validatedRequest = $request->validated();
+
+		if (Auth::attempt($validatedRequest, $request->filled('rememberMe')) && $user->email_verified_at !== null) {
 			return response()->json([
 				'user'    => $user,
 			], 201);
-		} else {
-			return response()->json(401);
 		}
 	}
 
-	public function logout(Request $request)
+	public function logout(): JsonResponse
 	{
 		Auth::guard('web')->logout();
 		return response()->json([
