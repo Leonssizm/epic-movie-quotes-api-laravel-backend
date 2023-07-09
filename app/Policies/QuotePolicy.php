@@ -11,12 +11,12 @@ class QuotePolicy
 	/**
 	 * Create a new policy instance.
 	 */
-	public function update(User $user, Quote $quote)
+	public function update(User $user, Quote $quote): Response
 	{
 		return $user->id === $quote->user_id ? Response::allow() : Response::denyWithStatus(403);
 	}
 
-	public function destroy(User $user, Quote $quote)
+	public function destroy(User $user, Quote $quote): Response
 	{
 		return $user->id === $quote->user_id ? Response::allow() : Response::denyWithStatus(403);
 	}

@@ -11,12 +11,12 @@ class MoviePolicy
 	/**
 	 * Create a new policy instance.
 	 */
-	public function update(User $user, Movie $movie)
+	public function update(User $user, Movie $movie): Response
 	{
 		return $user->id === $movie->user_id ? Response::allow() : Response::denyWithStatus(403);
 	}
 
-	public function destroy(User $user, Movie $movie)
+	public function destroy(User $user, Movie $movie): Response
 	{
 		return $user->id === $movie->user_id ? Response::allow() : Response::denyWithStatus(403);
 	}

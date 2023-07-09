@@ -130,20 +130,6 @@ And now you should provide **.env** file all the necessary environment variables
 
 #
 
-**OTHER .ENV VARIABLES FOR SETTING UP PROJECT LOCALLY:**
-
-> FRONTEND_HOME_PAGE="LOCALHOST/home"
-
-> FRONTEND_CALLBACK_PAGE="LOCALHOST/auth/google/call-back"
-
-> BACKEND_CALLBACK="BACKEND_LOCALHOST/api/auth/google/call-back"
-
-> USER_VERIFICATION_EMAIL_TOKEN_LINK="LOCALHOST/verify?token="
-
-> USER_VERIFICATION_NEW_EMAIL_TOKEN_LINK="LOCALHOST/verify-new-email?token="
-
-after setting up **.env** file, execute:
-
 ```sh
 php artisan config:cache
 ```
