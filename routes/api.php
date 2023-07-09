@@ -50,24 +50,23 @@ Route::middleware(['auth:sanctum'])->group(function () {
 		Route::post('movie', 'store')->name('movie.create');
 		Route::get('user/{user}/movies', 'getAllUserMovies')->name('user_movies.all');
 		Route::get('movies/{movie}', 'show')->name('movie.get');
-		Route::post('movies/{movie}', 'update')->name('movie.edit');
-		Route::delete('movies/{movie}', 'destroy')->name('movie.delete');
+		Route::post('movies/{movie}', 'update')->name('movie.edit')->middleware('can:update,movie');
+		Route::delete('movies/{movie}', 'destroy')->name('movie.delete')->middleware('can:destroy,movie');
 	});
 	Route::controller(QuoteController::class)->group(function () {
 		Route::get('quotes', 'index')->name('quotes.all');
 		Route::post('quote', 'store')->name('quote.create');
 		Route::get('quotes/{quote}', 'show')->name('quote.get');
-		Route::post('quotes/{quote}', 'update')->name('quote.edit');
-		Route::delete('quotes/{quote}', 'destroy')->name('quote.delete');
+		Route::post('quotes/{quote}', 'update')->name('quote.edit')->middleware('can:update,quote');
+		Route::delete('quotes/{quote}', 'destroy')->name('quote.delete')->middleware('can:destroy,quote');
 	});
-
+	Route::controller(NotificationController::class)->group(function () {
+		Route::get('notifications', 'index')->name('notifications.all');
+		Route::get('notifications/{notification}', 'makeNotificationRead')->name('notifications.read');
+		Route::get('notifications/read/all', 'readAllNotifications')->name('notifications.read_all');
+	});
 	Route::post('like', [LikeController::class, 'like'])->name('quote.like');
 	Route::post('comment', [CommentController::class, 'store'])->name('comment.add');
-
-	Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.all');
-	Route::get('notifications/{notification}', [NotificationController::class, 'makeNotificationRead'])->name('notifications.read');
-	Route::get('notifications/read/all', [NotificationController::class, 'readAllNotifications'])->name('notifications.read_all');
-
 	Route::get('genres', [GenreController::class, 'index'])->name('genre.all');
 });
 
