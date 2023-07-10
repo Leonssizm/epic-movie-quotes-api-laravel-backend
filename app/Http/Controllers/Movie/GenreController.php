@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Movie;
 
 use App\Models\Genre;
 use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 
 class GenreController extends Controller
 {

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\SignUpRequest;
 use App\Mail\VerifyUserEmail;
@@ -32,7 +33,7 @@ class AuthController extends Controller
 		$user->email_verification_token_created_at = now();
 		$user->save();
 
-		$verificationUrl = url(env('USER_VERIFICATION_EMAIL_TOKEN_LINK') . $token);
+		$verificationUrl = url(env('FRONTEND_APP_URL') . "verify?token={$token}");
 
 		Mail::to($user->email)->send(new VerifyUserEmail($verificationUrl, $user));
 	}

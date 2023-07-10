@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Movie;
 
 use App\Http\Requests\Movie\StoreMovieRequest;
 use App\Http\Requests\Movie\UpdateMovieRequest;
@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\File;
+use App\Http\Controllers\Controller;
 
 class MovieController extends Controller
 {
@@ -29,7 +30,7 @@ class MovieController extends Controller
 		return response()->json(new MovieCollection($movies), 200);
 	}
 
-	public function getAllUserMovies(User $user): JsonResponse
+	public function getUserMovies(User $user): JsonResponse
 	{
 		$movies = $user->movies()->get();
 
@@ -57,7 +58,7 @@ class MovieController extends Controller
 		return response()->json($movie, 200);
 	}
 
-	public function update(UpdateMovieRequest $request, Movie $movie)
+	public function update(UpdateMovieRequest $request, Movie $movie): JsonResponse
 	{
 		$movie->update($request->validated());
 
@@ -87,7 +88,7 @@ class MovieController extends Controller
 		return response()->json('Movie Removed', 204);
 	}
 
-	private function storeImage($request)
+	private function storeImage($request): string
 	{
 		$storedImage = uniqid() . '-' . $request['title']['en'] . '.' . $request['image']->extension();
 		$request['image']->move('storage', $storedImage);

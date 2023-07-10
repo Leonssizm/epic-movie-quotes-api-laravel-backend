@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\ChangePasswordRequest;
 use App\Mail\ResetPasswordMail;
 use App\Models\User;
@@ -31,7 +32,7 @@ class ForgotPasswordController extends Controller
 		$user->email_verification_token_created_at = now();
 		$user->save();
 
-		$verificationUrl = url("http://localhost:5173/verify-password?token={$token}");
+		$verificationUrl = url(env('FRONTEND_APP_URL') . "verify-password?token={$token}");
 
 		Mail::to($user->email)->send(new ResetPasswordMail($verificationUrl, $user));
 	}

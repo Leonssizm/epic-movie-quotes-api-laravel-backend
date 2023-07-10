@@ -7,9 +7,9 @@ use Illuminate\Http\JsonResponse;
 
 class NotificationController extends Controller
 {
-	public function index()
+	public function index(): JsonResponse
 	{
-		$notifications = Notification::where('receiver_id', auth()->id())->with('notifiable', 'sender')->get();
+		$notifications = Notification::where('receiver_id', auth()->id())->get();
 
 		if ($notifications->count() > 0) {
 			$response = [];
@@ -36,9 +36,10 @@ class NotificationController extends Controller
 		return response()->json('success', 200);
 	}
 
-	public function readAllNotifications()
+	public function readAllNotifications(): JsonResponse
 	{
-		$notifications = Notification::where('is_new', true)->get();
+		$notifications = Notification::where('receiver_id', auth()->id())->get();
+
 		$response = [];
 
 		foreach ($notifications as $notification) {
