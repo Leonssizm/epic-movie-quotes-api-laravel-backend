@@ -54,7 +54,7 @@ class UserController extends Controller
 
 				$user->save();
 
-				$verificationUrl = url(env('USER_VERIFICATION_NEW_EMAIL_TOKEN_LINK') . $token . '&email=' . $request->new_email);
+				$verificationUrl = url(env('FRONTEND_APP_URL') . "verify-new-email?token={$token}" . '&email=' . $request->new_email);
 
 				Mail::to($request->new_email)->send(new ChangeEmailMail($verificationUrl, $request->new_email));
 			}
@@ -74,7 +74,7 @@ class UserController extends Controller
 		return response()->json('email is changed', 200);
 	}
 
-	private function storeImage($request)
+	private function storeImage($request): string
 	{
 		$storedImage = uniqid() . '-' . $request->username . '.' . $request->profile_picture->extension();
 		$request->profile_picture->move('storage', $storedImage);

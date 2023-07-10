@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -38,13 +39,13 @@ class GoogleAuthController extends Controller
 			if ($new_user->wasRecentlyCreated && !$user) {
 				auth()->login($new_user);
 
-				return redirect()->away(env('FRONTEND_CALLBACK_PAGE') . '/' . $new_user->google_id);
+				return redirect()->away(env('FRONTEND_APP_URL') . 'auth/google/call-back/' . $new_user->google_id);
 			}
 
 			if (!$new_user->wasRecentlyCreated && $user) {
 				auth()->login($user);
 
-				return redirect()->away(env('FRONTEND_HOME_PAGE'));
+				return redirect()->away(env('FRONTEND_APP_URL') . 'home');
 			}
 		} catch(\Throwable $th) {
 			return response()->json(['Something went wrong', $th], 404);

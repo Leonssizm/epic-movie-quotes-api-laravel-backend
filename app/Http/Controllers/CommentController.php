@@ -17,7 +17,7 @@ class CommentController extends Controller
 		return response()->json(Comment::with('user')->get(), 200);
 	}
 
-	public function store(StoreCommentRequest $request, Comment $comment)
+	public function store(StoreCommentRequest $request, Comment $comment): JsonResponse
 	{
 		$newComment = $comment->create($request->validated())->load('user');
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Broadcasting\NotificationsChannel;
 use App\Models\User;
 use Illuminate\Support\Facades\Broadcast;
 
@@ -18,6 +19,4 @@ use Illuminate\Support\Facades\Broadcast;
 // 	return (int) $user->id === (int) $id;
 // });
 
-Broadcast::channel('movie-quotes.{userId}', function ($user, $userId) {
-	return $userId == auth()->user()->id;
-});
+Broadcast::channel('movie-quotes.{userId}', NotificationsChannel::class);

@@ -6,30 +6,27 @@ use App\Events\NotificationSent;
 use App\Http\Requests\Like\LikeRequest;
 use App\Models\Notification;
 use App\Models\Quote;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\JsonResponse;
 
 class LikeController extends Controller
 {
-	public function like(LikeRequest $request)
+	public function like(LikeRequest $request): JsonResponse
 	{
 		$validated = $request->validated();
-		$quote = Quote::find($validated['quote_id']);
+		$quote = Quote::find($validated['quote_id'])->load('likes');
 		$author = $quote->user;
 
-		$alreadyLiked = DB::table('quote_user')->where('quote_id', $quote->id)->where('user_id', $validated['user_id'])->first();
+		$alreadyLiked = $quote->likes->firstWhere('id', auth()->id());
 
 		if ($alreadyLiked) {
-			DB::table('quote_user')->where('quote_id', $validated['quote_id'])->where('user_id', $validated['user_id'])->delete();
+			$alreadyLiked->pivot->delete();
 
 			Notification::where('receiver_id', $author->id)->where('sender_id', $validated['user_id'])->where('is_like', true)->delete();
 
 			return response()->json('unlike', 200);
 		}
 
-		DB::table('quote_user')->insert([
-			'quote_id' => $validated['quote_id'],
-			'user_id'  => $validated['user_id'],
-		]);
+		$quote->likedByUsers()->attach($validated['user_id']);
 
 		if ($author->id !== auth()->id()) {
 			$notification = Notification::create([

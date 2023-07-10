@@ -1,13 +1,13 @@
 <?php
 
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CommentController;
-use App\Http\Controllers\ForgotPasswordController;
-use App\Http\Controllers\GenreController;
-use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Movie\GenreController;
+use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\LikeController;
-use App\Http\Controllers\MovieController;
+use App\Http\Controllers\Movie\MovieController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\UserController;
@@ -48,7 +48,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 	Route::controller(MovieController::class)->group(function () {
 		Route::get('movies', 'index')->name('movies');
 		Route::post('movie', 'store')->name('movie.create');
-		Route::get('user/{user}/movies', 'getAllUserMovies')->name('user_movies.all');
+		Route::get('user/{user}/movies', 'getUserMovies')->name('user_movies.all');
 		Route::get('movies/{movie}', 'show')->name('movie.get');
 		Route::post('movies/{movie}', 'update')->name('movie.edit')->middleware('can:update,movie');
 		Route::delete('movies/{movie}', 'destroy')->name('movie.delete')->middleware('can:destroy,movie');
@@ -63,7 +63,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 	Route::controller(NotificationController::class)->group(function () {
 		Route::get('notifications', 'index')->name('notifications.all');
 		Route::get('notifications/{notification}', 'makeNotificationRead')->name('notifications.read');
-		Route::get('notifications/read/all', 'readAllNotifications')->name('notifications.read_all');
+		Route::get('notifications-read-all', 'readAllNotifications')->name('notifications.read_all');
 	});
 	Route::post('like', [LikeController::class, 'like'])->name('quote.like');
 	Route::post('comment', [CommentController::class, 'store'])->name('comment.add');

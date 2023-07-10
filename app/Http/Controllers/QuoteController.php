@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\File;
 
 class QuoteController extends Controller
 {
-	public function index(Request $request)
+	public function index(Request $request): JsonResponse
 	{
 		$perPage = $request->input('per_page', 2);
 
@@ -37,7 +37,7 @@ class QuoteController extends Controller
 		return response()->json($quote, 200);
 	}
 
-	public function store(StoreQuoteRequest $request)
+	public function store(StoreQuoteRequest $request): JsonResponse
 	{
 		$validatedRequest = $request->validated();
 
@@ -49,7 +49,7 @@ class QuoteController extends Controller
 		return response()->json($quote, 200);
 	}
 
-	public function update(UpdateQuoteRequest $request, Quote $quote)
+	public function update(UpdateQuoteRequest $request, Quote $quote): JsonResponse
 	{
 		$quote->update($request->validated());
 
@@ -77,7 +77,7 @@ class QuoteController extends Controller
 		return response()->json('Quote Removed', 204);
 	}
 
-	private function storeImage($request)
+	private function storeImage($request): string
 	{
 		$storedImage = uniqid() . '-' . $request['body']['en'] . '.' . $request['thumbnail']->extension();
 		$request['thumbnail']->move('storage', $storedImage);
