@@ -16,19 +16,39 @@ class LoginRequest extends FormRequest
 	public function rules(): array
 	{
 		return [
-			'email'    => 'required|exists:users,email',
+			'email'    => 'required|string',
 			'password' => [
 				'required',
 				function ($attribute, $value, $fail) {
-					$user = User::where('email', $this->input('email'))->first();
-					if (!$user) {
-						return;
-					}
-					if (!Hash::check($value, $user->password)) {
-						$fail('Password is incorrect');
+					$fieldType = $this->getFieldType($this->input('email'));
+
+					if ($fieldType === 'email') {
+						$user = User::where('email', $this->input('email'))->first();
+						if (!$user) {
+							$fail('Email is incorrect');
+							return;
+						}
+						if (!Hash::check($value, $user->password)) {
+							$fail('Password is incorrect');
+						}
+					} else {
+						$user = User::where('username', $this->input('email'))->first();
+
+						if (!$user) {
+							$fail('Username is incorrect');
+							return;
+						}
+						if (!Hash::check($value, $user->password)) {
+							$fail('Password is incorrect');
+						}
 					}
 				},
 			],
 		];
+	}
+
+	public function getFieldType($input): string
+	{
+		return filter_var($input, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 	}
 }

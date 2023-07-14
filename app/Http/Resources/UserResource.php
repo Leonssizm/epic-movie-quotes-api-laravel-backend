@@ -21,6 +21,7 @@ class UserResource extends JsonResource
 			'profile_picture'=> $this->profile_picture,
 			'created_at'     => $this->created_at,
 			'updated_at'     => $this->updated_at,
+			'google_id'      => $this->google_id,
 		];
 	}
 }

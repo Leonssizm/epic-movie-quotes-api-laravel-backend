@@ -7,23 +7,12 @@ use Illuminate\Http\JsonResponse;
 
 class NotificationController extends Controller
 {
-	public function index(): JsonResponse
+	public function index()
 	{
-		$notifications = Notification::where('receiver_id', auth()->id())->get();
+		$notifications = Notification::where('receiver_id', auth()->id())->get()->load('notifiable', 'sender', 'notifiable.user');
 
 		if ($notifications->count() > 0) {
-			$response = [];
-
-			foreach ($notifications as $notification) {
-				$response[] = [
-					'quote'        => $notification->notifiable,
-					'user'         => $notification->notifiable->user,
-					'sender'       => $notification->sender,
-					'notification' => $notification,
-				];
-			}
-
-			return response()->json($response, 200);
+			return response()->json($notifications, 200);
 		} else {
 			return response()->json('no notifications yet', 204);
 		}
@@ -38,21 +27,13 @@ class NotificationController extends Controller
 
 	public function readAllNotifications(): JsonResponse
 	{
-		$notifications = Notification::where('receiver_id', auth()->id())->get();
-
-		$response = [];
+		$notifications = Notification::where('receiver_id', auth()->id())->get()->load('notifiable', 'sender', 'notifiable.user');
 
 		foreach ($notifications as $notification) {
 			$notification->is_new = false;
 			$notification->save();
-			$response[] = [
-				'quote'        => $notification->notifiable,
-				'user'         => $notification->notifiable->user,
-				'sender'       => $notification->sender,
-				'notification' => $notification,
-			];
 		}
 
-		return response()->json($response, 200);
+		return response()->json($notifications, 200);
 	}
 }

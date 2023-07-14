@@ -67,13 +67,17 @@ class AuthController extends Controller
 		return response()->json([$user], 201);
 	}
 
-	public function login(LoginRequest $request): JsonResponse
+	public function login(LoginRequest $request)
 	{
-		$user = User::where('email', $request->email)->first();
+		$fieldType = $this->getFieldType($request->email);
 
-		$validatedRequest = $request->validated();
+		if ($fieldType === 'email') {
+			$user = User::where('email', $request->email)->first();
+		} else {
+			$user = User::where('username', $request->email)->first();
+		}
 
-		if (Auth::attempt($validatedRequest, $request->filled('rememberMe')) && $user->email_verified_at !== null) {
+		if (Auth::attempt([$fieldType => $request->email, 'password' => $request->password], $request->filled('rememberMe')) && $user->email_verified_at !== null) {
 			return response()->json([
 				'user'    => $user,
 			], 201);
@@ -86,5 +90,10 @@ class AuthController extends Controller
 		return response()->json([
 			'message' => 'Logged out',
 		], 200);
+	}
+
+	public function getFieldType($input): string
+	{
+		return filter_var($input, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 	}
 }
