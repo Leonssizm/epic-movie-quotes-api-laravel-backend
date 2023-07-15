@@ -7,7 +7,7 @@ use Illuminate\Http\JsonResponse;
 
 class NotificationController extends Controller
 {
-	public function index()
+	public function index(): JsonResponse
 	{
 		$notifications = Notification::where('receiver_id', auth()->id())->get()->load('notifiable', 'sender', 'notifiable.user');
 

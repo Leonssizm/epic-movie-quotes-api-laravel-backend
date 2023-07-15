@@ -19,9 +19,13 @@ class ForgotPasswordController extends Controller
 
 		$user = User::all()->where('email', $email)->first();
 
-		$this->sendResetPasswordEmail($user);
+		if (isset($user->google_id)) {
+			return response()->json("Google User can't Change Password", 403);
+		} else {
+			$this->sendResetPasswordEmail($user);
 
-		return response()->json(200);
+			return response()->json(200);
+		}
 	}
 
 	protected function sendResetPasswordEmail($user): void

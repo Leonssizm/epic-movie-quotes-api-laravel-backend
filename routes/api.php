@@ -67,6 +67,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 	});
 	Route::post('like', [LikeController::class, 'like'])->name('quote.like');
 	Route::post('comment', [CommentController::class, 'store'])->name('comment.add');
+	Route::get('comments', [CommentController::class, 'index'])->name('comments');
 	Route::get('genres', [GenreController::class, 'index'])->name('genre.all');
 });
 

@@ -8,13 +8,16 @@ use App\Models\Comment;
 use App\Models\Notification;
 use App\Models\Quote;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 class CommentController extends Controller
 {
-	public function index(): JsonResponse
+	public function index(Request $request)
 	{
-		return response()->json(Comment::with('user')->get(), 200);
+		$comments = Comment::where('quote_id', $request->input('quote_id'))->get()->load('user');
+
+		return response()->json($comments, 200);
 	}
 
 	public function store(StoreCommentRequest $request, Comment $comment): JsonResponse
@@ -30,6 +33,7 @@ class CommentController extends Controller
 				'notifiable_type' => Quote::class,
 				'sender_id'       => auth()->id(),
 				'is_comment'      => true,
+				'is_new'          => true,
 			]);
 
 			$quote = Quote::find($newComment['quote_id']);

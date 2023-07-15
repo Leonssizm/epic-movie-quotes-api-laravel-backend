@@ -35,6 +35,7 @@ class LikeController extends Controller
 				'notifiable_type' => Quote::class,
 				'sender_id'       => auth()->id(),
 				'is_like'         => true,
+				'is_new'          => true,
 			]);
 
 			$sender = auth()->user();
