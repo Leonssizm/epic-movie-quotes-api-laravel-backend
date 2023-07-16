@@ -23,6 +23,8 @@ class LikeController extends Controller
 
 			Notification::where('receiver_id', $author->id)->where('sender_id', $validated['user_id'])->where('is_like', true)->delete();
 
+			NotificationSent::dispatch(['user' => $author, 'quote' => $quote, 'unlike' => true]);
+
 			return response()->json('unlike', 200);
 		}
 
