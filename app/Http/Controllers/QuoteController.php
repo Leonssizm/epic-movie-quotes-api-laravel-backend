@@ -6,6 +6,7 @@ use App\Http\Requests\Quote\StoreQuoteRequest;
 use App\Http\Requests\Quote\UpdateQuoteRequest;
 use App\Http\Resources\QuoteCollection;
 use App\Http\Resources\QuoteResource;
+use App\Models\Notification;
 use App\Models\Quote;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -71,6 +72,7 @@ class QuoteController extends Controller
 	public function destroy(Quote $quote): JsonResponse
 	{
 		File::delete('storage/' . $quote->thumbnail);
+		Notification::where('notifiable_id', $quote->id)->delete();
 
 		$quote->delete();
 
